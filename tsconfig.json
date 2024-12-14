@@ -1,0 +1,30 @@
+{
+    "references": [
+        {
+            "path": "./tsconfig.node.json"
+        }
+    ],
+    "compilerOptions": {
+        "target": "ESNext",
+        "jsx": "preserve",
+        "lib": ["DOM", "ESNext"],
+        "baseUrl": ".",
+        "module": "ESNext",
+        "moduleResolution": "Bundler",
+        "forceConsistentCasingInFileNames": true,
+        "strict": true,
+        "paths": {
+            "@/*": ["./src/*"]
+        },
+        "resolveJsonModule": true,
+        "types": ["vite/client", "node", "unplugin-vue-router/client"],
+        "allowJs": true,
+        "strictNullChecks": true,
+        "noUnusedLocals": true,
+        "esModuleInterop": true,
+        "isolatedModules": true,
+        "skipLibCheck": true
+    },
+    "include": ["./src/*.d.ts", "./src/**/*.d.ts", "./types/*.d.ts", "./src/**/*.ts", "./src/**/*.vue","./src/types/*.d.ts"],
+    "exclude": ["dist", "node_modules", "cypress"]
+}
