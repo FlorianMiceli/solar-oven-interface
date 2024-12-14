@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import BasePanel from './BasePanel.vue'
+import BasePanel from "./TemplatePanel.vue";
 </script>
 
 <template>
-  <BasePanel title="NITS RECEIVED GRAPH" />
-</template> 
+    <BasePanel title="NITS RECEIVED GRAPH" />
+</template>

@@ -1,9 +1,13 @@
 <script setup lang="ts">
+import ControlPanel from '@/components/ControlPanel.vue'
 </script>
 
 <template>
   <div class="dashboard">
-    <VisualizationPanel />
+    <div class="main-section">
+      <VisualizationPanel />
+      <ControlPanel />
+    </div>
 
     <div class="side-panels">
       <TemperaturePanel />
@@ -24,6 +28,13 @@
   height: calc(100vh - 4vh);
   box-sizing: border-box;
   overflow: hidden;
+}
+
+.main-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  flex: 1;
 }
 
 .side-panels {
