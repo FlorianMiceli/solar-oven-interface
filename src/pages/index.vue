@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import ControlPanel from '@/components/ControlPanel.vue'
+const modelOrientation = ref(0)
 </script>
 
 <template>
   <div class="dashboard">
     <div class="main-section">
-      <VisualizationPanel />
-      <ControlPanel />
+      <VisualizationPanel v-model:modelOrientation="modelOrientation" />
+      <ControlPanel v-model:modelOrientation="modelOrientation" />
     </div>
 
     <div class="side-panels">

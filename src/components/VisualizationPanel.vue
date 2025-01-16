@@ -2,8 +2,20 @@
 import * as THREE from 'three'
 import { ParametricGeometry } from 'three/examples/jsm/geometries/ParametricGeometry';
 
+const props = defineProps<{
+  modelOrientation?: number
+}>();
+
+const emit = defineEmits<{
+  'update:modelOrientation': [value: number]
+}>();
+
 const canvas = ref(null);
-const orientation = ref(0);
+const orientation = computed({
+  get: () => props.modelOrientation ?? 0,
+  set: (value) => emit('update:modelOrientation', value)
+});
+
 let scene: THREE.Scene, camera: THREE.PerspectiveCamera, renderer: THREE.WebGLRenderer, parabola: THREE.Mesh;
 
 const initScene = () => {

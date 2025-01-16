@@ -3,5 +3,5 @@ import BasePanel from "./TemplatePanel.vue";
 </script>
 
 <template>
-    <BasePanel title="TEMPERATURE GRAPH" />
+    <BasePanel title="TEMPERATURE" />
 </template>

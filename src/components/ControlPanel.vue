@@ -2,6 +2,24 @@
 import BasePanel from "./TemplatePanel.vue";
 import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown } from "lucide-vue-next";
 import { Button } from "@/shadcn-components/ui/button";
+
+const props = defineProps<{
+  modelOrientation?: number
+}>();
+
+const emit = defineEmits<{
+  'update:modelOrientation': [value: number]
+}>();
+
+const rotateLeft = () => {
+  const newValue = ((props.modelOrientation ?? 0) - 0.1 + 1) % 1;
+  emit('update:modelOrientation', newValue);
+};
+
+const rotateRight = () => {
+  const newValue = ((props.modelOrientation ?? 0) + 0.1) % 1;
+  emit('update:modelOrientation', newValue);
+};
 </script>
 
 <template>
@@ -10,7 +28,7 @@ import { Button } from "@/shadcn-components/ui/button";
             <div class="controls">
                 <div class="controls-grid">
                     <div class="left-control">
-                        <Button variant="outline" class="full-height-button">
+                        <Button variant="outline" class="full-height-button" @click="rotateLeft">
                             <ChevronLeft class="w-4 h-4" />
                         </Button>
                     </div>
@@ -25,7 +43,7 @@ import { Button } from "@/shadcn-components/ui/button";
                     </div>
 
                     <div class="right-control">
-                        <Button variant="outline" class="full-height-button">
+                        <Button variant="outline" class="full-height-button" @click="rotateRight">
                             <ChevronRight class="w-4 h-4" />
                         </Button>
                     </div>
