@@ -4,21 +4,27 @@ import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown } from "lucide-vue-ne
 import { Button } from "@/shadcn-components/ui/button";
 
 const props = defineProps<{
-  modelOrientation?: number
+    modelOrientation?: number,
+    targetTemperature: number
 }>();
 
 const emit = defineEmits<{
-  'update:modelOrientation': [value: number]
+    'update:modelOrientation': [value: number]
+    'update:targetTemperature': [value: number]
 }>();
 
 const rotateLeft = () => {
-  const newValue = ((props.modelOrientation ?? 0) - 0.1 + 1) % 1;
-  emit('update:modelOrientation', newValue);
+    const newValue = ((props.modelOrientation ?? 0) - 0.1 + 1) % 1;
+    emit('update:modelOrientation', newValue);
 };
 
 const rotateRight = () => {
-  const newValue = ((props.modelOrientation ?? 0) + 0.1) % 1;
-  emit('update:modelOrientation', newValue);
+    const newValue = ((props.modelOrientation ?? 0) + 0.1) % 1;
+    emit('update:modelOrientation', newValue);
+};
+
+const updateTemperature = (value: number) => {
+    emit('update:targetTemperature', value);
 };
 </script>
 
@@ -53,7 +59,8 @@ const rotateRight = () => {
 
         <BasePanel title="TARGET TEMPERATURE" class="temperature-panel">
             <div class="temperature-input">
-                <NumberField id="temperature" :default-value="18" :min="0">
+                <NumberField id="temperature" :model-value="targetTemperature" @update:model-value="updateTemperature"
+                    :min="0">
                     <NumberFieldContent>
                         <NumberFieldDecrement />
                         <NumberFieldInput />
