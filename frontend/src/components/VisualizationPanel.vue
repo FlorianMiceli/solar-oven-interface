@@ -2,22 +2,11 @@
 import * as THREE from 'three'
 import { ParametricGeometry } from 'three/examples/jsm/geometries/ParametricGeometry';
 
-const props = defineProps<{
-  modelOrientation?: number
-}>();
-
-const emit = defineEmits<{
-  'update:modelOrientation': [value: number]
-}>();
+const modelOrientation = ref(0)
 
 const canvas = ref<HTMLCanvasElement>();
 const webGLError = ref<string | null>(null);
 const hasWebGL = ref(true);
-
-const orientation = computed({
-  get: () => props.modelOrientation ?? 0,
-  set: (value) => emit('update:modelOrientation', value)
-});
 
 let scene: THREE.Scene, camera: THREE.PerspectiveCamera, renderer: THREE.WebGLRenderer, parabola: THREE.Mesh;
 
@@ -87,7 +76,7 @@ onMounted(() => {
   }
 });
 
-watch(orientation, (newValue) => {
+watch(modelOrientation, (newValue) => {
   if (parabola) {
     parabola.rotation.y = newValue * Math.PI * 2;
   }
@@ -98,7 +87,7 @@ watch(orientation, (newValue) => {
   <TemplatePanel title="3D VISUALIZATION" class="large-panel">
     <div class="content-placeholder">
       <div v-if="hasWebGL" class="viewport-container">
-        <input type="range" v-model="orientation" min="0" max="1" step="0.01">
+        <input type="range" v-model="modelOrientation" min="0" max="1" step="0.01">
         <canvas ref="canvas" width="300" height="300"></canvas>
       </div>
       <div v-else class="error-message">

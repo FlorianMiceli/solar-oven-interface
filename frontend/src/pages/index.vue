@@ -1,12 +1,11 @@
 <script setup lang="ts">
-const modelOrientation = ref(0)
 </script>
 
 <template>
   <div class="dashboard">
     <div class="main-section">
-      <VisualizationPanel v-model:modelOrientation="modelOrientation" />
-      <ControlPanel v-model:modelOrientation="modelOrientation" />
+      <VisualizationPanel />
+      <ControlPanel />
     </div>
 
     <div class="side-panels">

@@ -2,29 +2,52 @@
 import BasePanel from "./TemplatePanel.vue";
 import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown } from "lucide-vue-next";
 import { Button } from "@/shadcn-components/ui/button";
-
-const props = defineProps<{
-    modelOrientation?: number,
-    targetTemperature: number
-}>();
+import { computed } from "vue";
 
 const emit = defineEmits<{
-    'update:modelOrientation': [value: number]
     'update:targetTemperature': [value: number]
 }>();
 
-const rotateLeft = () => {
-    const newValue = ((props.modelOrientation ?? 0) - 0.1 + 1) % 1;
-    emit('update:modelOrientation', newValue);
-};
+const props = defineProps<{
+    modelValue: number
+}>();
 
-const rotateRight = () => {
-    const newValue = ((props.modelOrientation ?? 0) + 0.1) % 1;
-    emit('update:modelOrientation', newValue);
-};
+const targetTemperature = computed(() => props.modelValue);
 
 const updateTemperature = (value: number) => {
     emit('update:targetTemperature', value);
+};
+
+const onLeftPress = () => {
+    emit('leftPress');
+};
+
+const onLeftRelease = () => {
+    emit('leftRelease');
+};
+
+const onRightPress = () => {
+    emit('rightPress');
+};
+
+const onRightRelease = () => {
+    emit('rightRelease');
+};
+
+const onUpPress = () => {
+    emit('upPress');
+};
+
+const onUpRelease = () => {
+    emit('upRelease');
+};
+
+const onDownPress = () => {
+    emit('downPress');
+};
+
+const onDownRelease = () => {
+    emit('downRelease');
 };
 </script>
 
@@ -34,22 +57,26 @@ const updateTemperature = (value: number) => {
             <div class="controls">
                 <div class="controls-grid">
                     <div class="left-control">
-                        <Button variant="outline" class="full-height-button" @click="rotateLeft">
+                        <Button variant="outline" class="full-height-button" @mousedown="onLeftPress"
+                            @mouseup="onLeftRelease" @mouseleave="onLeftRelease">
                             <ChevronLeft class="w-4 h-4" />
                         </Button>
                     </div>
 
                     <div class="center-controls">
-                        <Button variant="outline" class="full-width-button">
+                        <Button variant="outline" class="full-width-button" @mousedown="onUpPress"
+                            @mouseup="onUpRelease" @mouseleave="onUpRelease">
                             <ChevronUp class="w-4 h-4" />
                         </Button>
-                        <Button variant="outline" class="full-width-button">
+                        <Button variant="outline" class="full-width-button" @mousedown="onDownPress"
+                            @mouseup="onDownRelease" @mouseleave="onDownRelease">
                             <ChevronDown class="w-4 h-4" />
                         </Button>
                     </div>
 
                     <div class="right-control">
-                        <Button variant="outline" class="full-height-button" @click="rotateRight">
+                        <Button variant="outline" class="full-height-button" @mousedown="onRightPress"
+                            @mouseup="onRightRelease" @mouseleave="onRightRelease">
                             <ChevronRight class="w-4 h-4" />
                         </Button>
                     </div>
