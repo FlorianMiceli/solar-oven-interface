@@ -29,6 +29,8 @@
 int ROT_OK = 0; // variable qu'on changera pour passer de la recherche du soleil sur la rotation à la recherche du soleil sur la translation
 int TRANS_OK = 0;
 bool moteurBloque = false;
+#define MOUVEMENT 'arret'
+#define MODE 'manuel'
 
 // webserver
 const char *ssid = "ESP32-S3_AP";
@@ -64,6 +66,16 @@ void setup()
     server.on("/", handleRoot);
     server.on("/lirePhotodiodes", HTTP_GET, []()
               { server.send(200, "text/plain", lirePhotodiodes()); });
+
+    server.on("/mode_manuel", [](){MODE = 'manuel'});
+    server.on("/mode_asservissement", [](){MODE = 'asservissement'});
+
+    server.on("/rotation_droite", [](){MOUVEMENT = 'droite'});
+    server.on("/rotation_gauche", [](){MOUVEMENT = 'gauche'});
+    server.on("/translation_arriere", [](){MOUVEMENT = 'arriere'});
+    server.on("/translation_avant", [](){MOUVEMENT = 'avant'});
+    server.on("/stop", [](){MOUVEMENT = 'stop'});
+    
     server.begin();
     Serial.println("Serveur HTTP démarré");
 }
@@ -71,34 +83,21 @@ void setup()
 void loop()
 {
     // Aurélien
-    int Mode = 0;
-    /*
-        ici faut que tu mette la ligne qui nous permettra de récupérer la valeur que tu nous envoi;
-        pour le reste du programme je propose qu'on affecte à chaque bouton une valeur par exemple quand on clique sur droite cela envoi 1 qui nous
-        envoi une valeur à nous par la suite de faire le mouvement qu'on veut dans ce programme
-        il nous faut donc une valeur :
-        - une valeur pour tourner à droite
-        - une valeur pour tourner à gauche
-        - une valeur pour translater vers l'avant
-        - une valeur pour translater vers l'arrière
-        - il faut aussi qu'on renvoi la valeur de la température tjr en direct
-    */
-    if (Mode == 1)
+    if (MODE == 'manuel')
     {
-        int Bouger = 4; // ici on met la valeur qui nous permet de récupérer la valeur pour connaitre le sens de rotation dans lequel on veut aller
-        if (Bouger == 1)
+        if (MOUVEMENT == 'droite')
         { // on part à droite
             tournerRot(DROITE);
         }
-        else if (Bouger == 2)
+        else if (MOUVEMENT == 'gauche')
         { // on part à gauche
             tournerRot(GAUCHE);
         }
-        else if (Bouger == 3)
+        else if (MOUVEMENT == 'avant')
         { // on part vers l'avant
             tournerTrans(AVANT);
         }
-        else if (Bouger == 4)
+        else if (MOUVEMENT == 'arriere')
         { // on part vers l'arrière
             tournerTrans(ARRIERE);
         }
@@ -107,7 +106,7 @@ void loop()
             Serial.println("On bouge plus");
         }
     }
-    else
+    if (MODE == 'asservissement')
     {
 
         if (ROT_OK == 0)
