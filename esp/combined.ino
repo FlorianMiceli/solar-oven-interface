@@ -26,11 +26,31 @@
 #define ARRIERE LOW
 #define PIN_BOUTON_DEBUT 18
 #define PIN_BOUTON_FIN 8
-int ROT_OK = 0; // variable qu'on changera pour passer de la recherche du soleil sur la rotation à la recherche du soleil sur la translation
+
+// Define operation modes
+enum Mode
+{
+    MODE_MANUEL,
+    MODE_ASSERVISSEMENT
+};
+
+// Define movement states
+enum Mouvement
+{
+    ARRET,
+    ROT_DROITE,
+    ROT_GAUCHE,
+    TRANS_AVANT,
+    TRANS_ARRIERE
+};
+
+// Global variables for current mode and movement
+Mode MODE = MODE_MANUEL;
+Mouvement MOUVEMENT = ARRET;
+
+int ROT_OK = 0;
 int TRANS_OK = 0;
 bool moteurBloque = false;
-#define MOUVEMENT 'arret'
-#define MODE 'manuel'
 
 // webserver
 const char *ssid = "ESP32-S3_AP";
@@ -67,15 +87,22 @@ void setup()
     server.on("/lirePhotodiodes", HTTP_GET, []()
               { server.send(200, "text/plain", lirePhotodiodes()); });
 
-    server.on("/mode_manuel", [](){MODE = 'manuel'});
-    server.on("/mode_asservissement", [](){MODE = 'asservissement'});
+    server.on("/mode_manuel", []()
+              { MODE = MODE_MANUEL; });
+    server.on("/mode_asservissement", []()
+              { MODE = MODE_ASSERVISSEMENT; });
 
-    server.on("/rotation_droite", [](){MOUVEMENT = 'droite'});
-    server.on("/rotation_gauche", [](){MOUVEMENT = 'gauche'});
-    server.on("/translation_arriere", [](){MOUVEMENT = 'arriere'});
-    server.on("/translation_avant", [](){MOUVEMENT = 'avant'});
-    server.on("/stop", [](){MOUVEMENT = 'stop'});
-    
+    server.on("/rotation_droite", []()
+              { MOUVEMENT = ROT_DROITE; });
+    server.on("/rotation_gauche", []()
+              { MOUVEMENT = ROT_GAUCHE; });
+    server.on("/translation_arriere", []()
+              { MOUVEMENT = TRANS_ARRIERE; });
+    server.on("/translation_avant", []()
+              { MOUVEMENT = TRANS_AVANT; });
+    server.on("/stop", []()
+              { MOUVEMENT = ARRET; });
+
     server.begin();
     Serial.println("Serveur HTTP démarré");
 }
@@ -83,21 +110,21 @@ void setup()
 void loop()
 {
     // Aurélien
-    if (MODE == 'manuel')
+    if (MODE == MODE_MANUEL)
     {
-        if (MOUVEMENT == 'droite')
+        if (MOUVEMENT == ROT_DROITE)
         { // on part à droite
             tournerRot(DROITE);
         }
-        else if (MOUVEMENT == 'gauche')
+        else if (MOUVEMENT == ROT_GAUCHE)
         { // on part à gauche
             tournerRot(GAUCHE);
         }
-        else if (MOUVEMENT == 'avant')
+        else if (MOUVEMENT == TRANS_AVANT)
         { // on part vers l'avant
             tournerTrans(AVANT);
         }
-        else if (MOUVEMENT == 'arriere')
+        else if (MOUVEMENT == TRANS_ARRIERE)
         { // on part vers l'arrière
             tournerTrans(ARRIERE);
         }
@@ -106,7 +133,7 @@ void loop()
             Serial.println("On bouge plus");
         }
     }
-    if (MODE == 'asservissement')
+    if (MODE == MODE_ASSERVISSEMENT)
     {
 
         if (ROT_OK == 0)
