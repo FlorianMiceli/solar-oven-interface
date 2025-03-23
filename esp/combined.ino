@@ -27,14 +27,12 @@
 #define PIN_BOUTON_DEBUT 18
 #define PIN_BOUTON_FIN 8
 
-// Define operation modes
 enum Mode
 {
     MODE_MANUEL,
     MODE_ASSERVISSEMENT
 };
 
-// Define movement states
 enum Mouvement
 {
     ARRET,
@@ -44,7 +42,6 @@ enum Mouvement
     TRANS_ARRIERE
 };
 
-// Global variables for current mode and movement
 Mode MODE = MODE_MANUEL;
 Mouvement MOUVEMENT = ARRET;
 
