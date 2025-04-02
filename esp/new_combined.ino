@@ -98,6 +98,9 @@ void setup()
     server.on("/stop", []()
               { MOUVEMENT = ARRET; server.send(200, "text/plain", "Route passed"); });
 
+    server.on("/getMode", []()
+              { server.send(200, "application/json", MODE == MODE_MANUEL ? "true" : "false"); });
+
     server.begin();
     Serial.println("Serveur HTTP démarré");
 }
@@ -234,8 +237,8 @@ void faireTrans()
 }
 void chercherSoleilTrans()
 {
-    int valeurHaute =  analogRead(PHOTODIODE_HAUT);
-    int valeurBasse =  analogRead(PHOTODIODE_BAS);
+    int valeurHaute = analogRead(PHOTODIODE_HAUT);
+    int valeurBasse = analogRead(PHOTODIODE_BAS);
 
     if (abs(valeurHaute - valeurBasse) < 100)
     { // On fait rien

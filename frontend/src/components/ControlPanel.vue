@@ -2,7 +2,7 @@
 import BasePanel from "./TemplatePanel.vue";
 import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown } from "lucide-vue-next";
 import { Button } from "@/shadcn-components/ui/button";
-import { computed, watch } from "vue";
+import { computed, watch, ref, onMounted, onUnmounted } from "vue";
 import { sendCommand } from "@/helpers/esp32Helpers";
 
 const emit = defineEmits<{
@@ -16,6 +16,36 @@ const props = defineProps<{
 const targetTemperature = computed(() => props.modelValue);
 
 const toggleMode = ref(true)
+
+// Add polling mechanism for mode status
+let pollInterval: ReturnType<typeof setInterval> | null = null;
+
+const checkModeStatus = async () => {
+    try {
+        const response = await sendCommand('/getMode');
+        if (response) {
+            const isManualMode = await response.json();
+            toggleMode.value = isManualMode;
+        }
+    } catch (error) {
+        console.error('Failed to fetch mode status:', error);
+    }
+};
+
+onMounted(() => {
+    // Initial check
+    checkModeStatus();
+    // Set up polling every second
+    pollInterval = setInterval(checkModeStatus, 1000);
+});
+
+onUnmounted(() => {
+    // Clean up interval when component is destroyed
+    if (pollInterval !== null) {
+        clearInterval(pollInterval);
+    }
+});
+
 watch(toggleMode, (newValue) => {
     if (newValue) {
         turnOnManualMode();
