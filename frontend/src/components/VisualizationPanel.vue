@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import * as THREE from 'three'
-import { ParametricGeometry } from 'three/examples/jsm/geometries/ParametricGeometry';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 
 const modelOrientation = ref(0)
 
@@ -8,7 +8,7 @@ const canvas = ref<HTMLCanvasElement>();
 const webGLError = ref<string | null>(null);
 const hasWebGL = ref(true);
 
-let scene: THREE.Scene, camera: THREE.PerspectiveCamera, renderer: THREE.WebGLRenderer, parabola: THREE.Mesh;
+let scene: THREE.Scene, camera: THREE.PerspectiveCamera, renderer: THREE.WebGLRenderer, model: THREE.Group;
 
 const checkWebGLSupport = (): boolean => {
   try {
@@ -39,22 +39,59 @@ const initScene = () => {
       alpha: true
     });
 
-    if (!renderer) {
-      throw new Error("Failed to create WebGL renderer");
-    }
+    // Activer le clipping
+    renderer.localClippingEnabled = true;
 
-    const geometry = new ParametricGeometry((u: number, v: number, dest: THREE.Vector3) => {
-      const x = (u * 2 - 1) / 2;
-      const y = (v * 2 - 1) / 2;
-      const z = x * x + y * y;
-      dest.set(x, y, z);
-    }, 50, 50);
+    const clippingPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
 
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
-    parabola = new THREE.Mesh(geometry, material);
-    scene.add(parabola);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    scene.add(ambientLight);
 
-    camera.position.z = 2;
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    directionalLight.position.set(5, 5, 5);
+    scene.add(directionalLight);
+
+    const loader = new GLTFLoader();
+    loader.load(
+      '/src/assets/3dmodel.gltf',
+      (gltf) => {
+        model = gltf.scene;
+        model.scale.set(1, 1, 1);
+        model.position.set(0, 0, 0);
+
+        model.rotation.x = 0;
+        model.rotation.y = 0;
+        model.rotation.z = Math.PI / 2;
+
+        // Appliquer le clipping plane à tous les matériaux du modèle
+        model.traverse((node: THREE.Object3D) => {
+          if ((node as THREE.Mesh).isMesh) {
+            const mesh = node as THREE.Mesh;
+            if (mesh.material) {
+              const material = mesh.material as THREE.Material;
+              material.clippingPlanes = [clippingPlane];
+              material.clipShadows = true;
+              material.needsUpdate = true;
+            }
+          }
+        });
+
+        scene.add(model);
+      },
+      (progress) => {
+        console.log('Loading progress:', (progress.loaded / progress.total * 100) + '%');
+      },
+      (error) => {
+        console.error('Error loading model:', error);
+        webGLError.value = `Failed to load 3D model: ${error.message}`;
+      }
+    );
+
+    camera.position.z = 10;
+    camera.position.y = -25;
+    camera.position.x = 0;
+    camera.lookAt(0, 0, 10);
+    camera.up.set(0, 0, 0);
   } catch (error: any) {
     hasWebGL.value = false;
     webGLError.value = `Failed to initialize 3D visualization: ${error.message}`;
@@ -77,8 +114,11 @@ onMounted(() => {
 });
 
 watch(modelOrientation, (newValue) => {
-  if (parabola) {
-    parabola.rotation.y = newValue * Math.PI * 2;
+  if (model) {
+    // Rotation du modèle autour de l'axe Z
+    model.rotation.x = 0;
+    model.rotation.y = 0;
+    model.rotation.z = Math.PI / 2 + (newValue * Math.PI * 2); // Rotation autour de l'axe Z en partant de PI/2
   }
 });
 </script>
