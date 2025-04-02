@@ -1,5 +1,6 @@
 #include <WiFi.h>
 #include <WebServer.h>
+#include <WebSocketsServer.h>
 
 #define PUL_PIN_ROT 9
 #define DIR_PIN_ROT 10
@@ -51,6 +52,25 @@ Mouvement MOUVEMENT = ARRET;
 const char *ssid = "ESP32-S3_AP";
 const char *password = "motdepasse123";
 WebServer server(80);
+WebSocketsServer webSocket = WebSocketsServer(81); // WebSocket server on port 81
+
+void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
+{
+    switch (type)
+    {
+    case WStype_DISCONNECTED:
+        Serial.printf("[%u] Disconnected!\n", num);
+        break;
+    case WStype_CONNECTED:
+    {
+        Serial.printf("[%u] Connected!\n", num);
+        // Send current mode immediately upon connection
+        String json = "{\"type\":\"mode\",\"value\":" + String(MODE == MODE_MANUEL ? "true" : "false") + "}";
+        webSocket.sendTXT(num, json);
+    }
+    break;
+    }
+}
 
 void setup()
 {
@@ -101,12 +121,28 @@ void setup()
     server.on("/getMode", []()
               { server.send(200, "application/json", MODE == MODE_MANUEL ? "true" : "false"); });
 
+    webSocket.begin();
+    webSocket.onEvent(webSocketEvent);
+
     server.begin();
     Serial.println("Serveur HTTP démarré");
+    Serial.println("Serveur WebSocket démarré");
 }
 
 void loop()
 {
+    webSocket.loop();
+    server.handleClient();
+
+    static Mode lastMode = MODE;
+    if (lastMode != MODE)
+    {
+        // Mode has changed, notify all clients
+        String json = "{\"type\":\"mode\",\"value\":" + String(MODE == MODE_MANUEL ? "true" : "false") + "}";
+        webSocket.broadcastTXT(json);
+        lastMode = MODE;
+    }
+
     if (MODE == MODE_MANUEL)
     {
         if (MOUVEMENT == ROT_DROITE)
@@ -149,9 +185,6 @@ void loop()
             }
         }
     }
-
-    // webserver
-    server.handleClient();
 }
 
 void handleRoot()

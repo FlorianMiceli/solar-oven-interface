@@ -17,32 +17,37 @@ const targetTemperature = computed(() => props.modelValue);
 
 const toggleMode = ref(true)
 
-// Add polling mechanism for mode status
-let pollInterval: ReturnType<typeof setInterval> | null = null;
-
-const checkModeStatus = async () => {
-    try {
-        const response = await sendCommand('/getMode');
-        if (response) {
-            const isManualMode = await response.json();
-            toggleMode.value = isManualMode;
-        }
-    } catch (error) {
-        console.error('Failed to fetch mode status:', error);
-    }
-};
+let ws: WebSocket | null = null;
 
 onMounted(() => {
-    // Initial check
-    checkModeStatus();
-    // Set up polling every second
-    pollInterval = setInterval(checkModeStatus, 1000);
+    // Connect to WebSocket server
+    ws = new WebSocket('ws://' + window.location.hostname + ':81');
+
+    ws.onmessage = (event) => {
+        try {
+            const data = JSON.parse(event.data);
+            if (data.type === 'mode') {
+                toggleMode.value = data.value;
+            }
+        } catch (error) {
+            console.error('Failed to parse WebSocket message:', error);
+        }
+    };
+
+    ws.onclose = () => {
+        console.log('WebSocket connection closed');
+        // Optional: Implement reconnection logic here
+    };
+
+    ws.onerror = (error) => {
+        console.error('WebSocket error:', error);
+    };
 });
 
 onUnmounted(() => {
-    // Clean up interval when component is destroyed
-    if (pollInterval !== null) {
-        clearInterval(pollInterval);
+    if (ws) {
+        ws.close();
+        ws = null;
     }
 });
 
