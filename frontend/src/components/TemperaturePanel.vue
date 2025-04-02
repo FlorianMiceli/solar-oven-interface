@@ -25,11 +25,10 @@ const data = [
 
 <template>
     <BasePanel title="TEMPERATURE">
-        <LineChart :data="data" index="year"
-            :categories="['Export Growth Rate', 'Import Growth Rate', 'Target Temperature']" :y-formatter="(tick, i) => {
-                return typeof tick === 'number'
-                    ? `${tick}°F`
-                    : ''
-            }" />
+        <LineChart :data="data" index="year" :categories="['Current Temperature', 'Target Temperature']" :y-formatter="(tick, i) => {
+            return typeof tick === 'number'
+                ? `${tick}°C`
+                : ''
+        }" />
     </BasePanel>
 </template>

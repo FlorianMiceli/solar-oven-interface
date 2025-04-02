@@ -2,7 +2,8 @@
 import BasePanel from "./TemplatePanel.vue";
 import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown } from "lucide-vue-next";
 import { Button } from "@/shadcn-components/ui/button";
-import { computed } from "vue";
+import { computed, watch } from "vue";
+import { sendCommand } from "@/helpers/esp32Helpers";
 
 const emit = defineEmits<{
     'update:targetTemperature': [value: number]
@@ -14,45 +15,69 @@ const props = defineProps<{
 
 const targetTemperature = computed(() => props.modelValue);
 
+const toggleMode = ref(true)
+watch(toggleMode, (newValue) => {
+    if (newValue) {
+        turnOnManualMode();
+    } else {
+        turnOnAsservissementMode();
+    }
+});
+
 const updateTemperature = (value: number) => {
     emit('update:targetTemperature', value);
 };
 
 const onLeftPress = () => {
-    emit('leftPress');
+    sendCommand('/rotation_gauche');
 };
 
 const onLeftRelease = () => {
-    emit('leftRelease');
+    sendCommand('/stop');
 };
 
 const onRightPress = () => {
-    emit('rightPress');
+    sendCommand('/rotation_droite');
 };
 
 const onRightRelease = () => {
-    emit('rightRelease');
+    sendCommand('/stop');
 };
 
 const onUpPress = () => {
-    emit('upPress');
+    sendCommand('/translation_avant');
 };
 
 const onUpRelease = () => {
-    emit('upRelease');
+    sendCommand('/stop');
 };
 
 const onDownPress = () => {
-    emit('downPress');
+    sendCommand('/translation_arriere');
 };
 
 const onDownRelease = () => {
-    emit('downRelease');
+    sendCommand('/stop');
 };
+
+const turnOnManualMode = () => {
+    sendCommand('/mode_manuel')
+}
+
+const turnOnAsservissementMode = () => {
+    sendCommand('/mode_asservissement')
+}
 </script>
 
 <template>
     <div class="control-panels">
+        <BasePanel title="MANUAL MODE" class="navigation-panel">
+            <div class="controls">
+                <div class="control-grid">
+                    <Switch id="airplane-mode" v-model="toggleMode" />
+                </div>
+            </div>
+        </BasePanel>
         <BasePanel title="CONTROLS" class="navigation-panel">
             <div class="controls">
                 <div class="controls-grid">

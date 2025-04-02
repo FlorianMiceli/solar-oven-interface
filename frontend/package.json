@@ -28,7 +28,7 @@
         "pinia": "^2.1.7",
         "pinia-plugin-persistedstate": "^3.2.1",
         "radix-vue": "^1.9.5",
-        "reka-ui": "^2.0.2",
+        "reka-ui": "^2.1.1",
         "tailwind-merge": "^2.6.0",
         "tailwindcss-animate": "^1.0.7",
         "three": "^0.171.0",
