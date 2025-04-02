@@ -7,13 +7,22 @@ import { sendCommand } from "@/helpers/esp32Helpers";
 
 const emit = defineEmits<{
     'update:targetTemperature': [value: number]
+    'update:modelOrientation': [value: number]
 }>();
 
 const props = defineProps<{
     modelValue: number
+    modelOrientation: number
 }>();
 
 const targetTemperature = computed(() => props.modelValue);
+const currentOrientation = computed({
+    get: () => props.modelOrientation,
+    set: (value) => emit('update:modelOrientation', value)
+});
+
+const ROTATION_SPEED = 0.001;
+let rotationInterval: ReturnType<typeof setInterval> | null = null;
 
 const toggleMode = ref(true)
 
@@ -40,9 +49,12 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-    // Clean up interval when component is destroyed
+    // Clean up intervals when component is destroyed
     if (pollInterval !== null) {
         clearInterval(pollInterval);
+    }
+    if (rotationInterval !== null) {
+        clearInterval(rotationInterval);
     }
 });
 
@@ -60,18 +72,32 @@ const updateTemperature = (value: number) => {
 
 const onLeftPress = () => {
     sendCommand('/rotation_gauche');
+    rotationInterval = setInterval(() => {
+        currentOrientation.value = (currentOrientation.value + ROTATION_SPEED) % 1;
+    }, 16);
 };
 
 const onLeftRelease = () => {
     sendCommand('/stop');
+    if (rotationInterval) {
+        clearInterval(rotationInterval);
+        rotationInterval = null;
+    }
 };
 
 const onRightPress = () => {
     sendCommand('/rotation_droite');
+    rotationInterval = setInterval(() => {
+        currentOrientation.value = (currentOrientation.value - ROTATION_SPEED) % 1;
+    }, 16);
 };
 
 const onRightRelease = () => {
     sendCommand('/stop');
+    if (rotationInterval) {
+        clearInterval(rotationInterval);
+        rotationInterval = null;
+    }
 };
 
 const onUpPress = () => {

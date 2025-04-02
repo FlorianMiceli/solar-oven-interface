@@ -2,7 +2,18 @@
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 
-const modelOrientation = ref(0)
+const props = defineProps<{
+  modelOrientation: number
+}>();
+
+const emit = defineEmits<{
+  'update:modelOrientation': [value: number]
+}>();
+
+const modelOrientation = computed({
+  get: () => props.modelOrientation,
+  set: (value) => emit('update:modelOrientation', value)
+});
 
 const canvas = ref<HTMLCanvasElement>();
 const webGLError = ref<string | null>(null);
@@ -127,7 +138,6 @@ watch(modelOrientation, (newValue) => {
   <TemplatePanel title="3D VISUALIZATION" class="large-panel">
     <div class="content-placeholder">
       <div v-if="hasWebGL" class="viewport-container">
-        <input type="range" v-model="modelOrientation" min="0" max="1" step="0.01">
         <canvas ref="canvas" width="300" height="300"></canvas>
       </div>
       <div v-else class="error-message">

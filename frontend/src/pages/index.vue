@@ -1,11 +1,15 @@
 <script setup lang="ts">
+import { ref } from 'vue';
+
+const modelOrientation = ref(0);
+const targetTemperature = ref(0);
 </script>
 
 <template>
   <div class="dashboard">
     <div class="main-section">
-      <VisualizationPanel />
-      <ControlPanel />
+      <VisualizationPanel v-model:modelOrientation="modelOrientation" />
+      <ControlPanel v-model:modelOrientation="modelOrientation" v-model="targetTemperature" />
     </div>
 
     <div class="side-panels">
