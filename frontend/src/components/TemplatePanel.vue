@@ -5,9 +5,9 @@ defineProps<{
 </script>
 
 <template>
-  <div class="panel">
-    <h2>{{ title }}</h2>
-    <div class="content-placeholder">
+  <div class="flex flex-col flex-1 bg-white rounded-lg p-4 shadow-sm">
+    <h2 class="mb-4 text-sm font-bold text-neutral-800">{{ title }}</h2>
+    <div class="flex-1 w-full h-full bg-neutral-100 rounded">
       <slot></slot>
     </div>
   </div>
@@ -38,4 +38,4 @@ h2 {
   border-radius: 4px;
   flex: 1;
 }
-</style> 
+</style>

@@ -136,7 +136,7 @@ watch(modelOrientation, (newValue) => {
 
 <template>
   <TemplatePanel title="3D VISUALIZATION" class="large-panel">
-    <div class="content-placeholder">
+    <div class="content-placeholder h-[200px] md:h-[300px]">
       <div v-if="hasWebGL" class="viewport-container">
         <canvas ref="canvas" width="300" height="300"></canvas>
       </div>
@@ -156,7 +156,6 @@ watch(modelOrientation, (newValue) => {
 
 .content-placeholder {
   width: 100%;
-  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;

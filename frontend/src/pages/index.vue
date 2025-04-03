@@ -31,6 +31,7 @@ const targetTemperature = ref(0);
   height: calc(100vh - 4vh);
   box-sizing: border-box;
   overflow: hidden;
+  flex-direction: row;
 }
 
 .main-section {
@@ -38,6 +39,8 @@ const targetTemperature = ref(0);
   flex-direction: column;
   gap: 1rem;
   flex: 1;
+  min-width: 0;
+  /* Prevent flex child from overflowing */
 }
 
 .side-panels {
@@ -52,5 +55,17 @@ const targetTemperature = ref(0);
   display: flex;
   gap: 1rem;
   flex: 1;
+}
+
+@media (max-width: 1200px) {
+  .dashboard {
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  .side-panels {
+    width: 100%;
+    height: auto;
+  }
 }
 </style>

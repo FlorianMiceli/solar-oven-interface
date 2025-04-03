@@ -52,6 +52,13 @@ const char *ssid = "ESP32-S3_AP";
 const char *password = "motdepasse123";
 WebServer server(80);
 
+void setCorsHeaders()
+{
+    server.sendHeader("Access-Control-Allow-Origin", "*");
+    server.sendHeader("Access-Control-Allow-Methods", "GET");
+    server.sendHeader("Access-Control-Allow-Headers", "*");
+}
+
 void setup()
 {
 
@@ -78,28 +85,60 @@ void setup()
     IPAddress IP = WiFi.softAPIP();
     Serial.print("Adresse IP du point d'accès: ");
     Serial.println(IP);
+
     server.on("/", handleRoot);
+
     server.on("/lirePhotodiodes", HTTP_GET, []()
-              { server.send(200, "text/plain", lirePhotodiodes()); });
+              {
+        setCorsHeaders();
+        server.send(200, "text/plain", lirePhotodiodes()); });
 
     server.on("/mode_manuel", []()
-              { MODE = MODE_MANUEL; server.send(200, "text/plain", "Route passed"); });
+              {
+        setCorsHeaders();
+        MODE = MODE_MANUEL;
+        server.send(200, "text/plain", "Route passed"); });
+
     server.on("/mode_asservissement", []()
-              { MODE = MODE_ASSERVISSEMENT; server.send(200, "text/plain", "Route passed"); });
+              {
+        setCorsHeaders();
+        MODE = MODE_ASSERVISSEMENT;
+        server.send(200, "text/plain", "Route passed"); });
 
     server.on("/rotation_droite", []()
-              { MOUVEMENT = ROT_DROITE; server.send(200, "text/plain", "Route passed"); });
+              {
+        setCorsHeaders();
+        MOUVEMENT = ROT_DROITE;
+        server.send(200, "text/plain", "Route passed"); });
+
     server.on("/rotation_gauche", []()
-              { MOUVEMENT = ROT_GAUCHE; server.send(200, "text/plain", "Route passed"); });
+              {
+        setCorsHeaders();
+        MOUVEMENT = ROT_GAUCHE;
+        server.send(200, "text/plain", "Route passed"); });
+
     server.on("/translation_arriere", []()
-              { MOUVEMENT = TRANS_ARRIERE; server.send(200, "text/plain", "Route passed"); });
+              {
+        setCorsHeaders();
+        MOUVEMENT = TRANS_ARRIERE;
+        server.send(200, "text/plain", "Route passed"); });
+
     server.on("/translation_avant", []()
-              { MOUVEMENT = TRANS_AVANT; server.send(200, "text/plain", "Route passed"); });
+              {
+        setCorsHeaders();
+        MOUVEMENT = TRANS_AVANT;
+        server.send(200, "text/plain", "Route passed"); });
+
     server.on("/stop", []()
-              { MOUVEMENT = ARRET; server.send(200, "text/plain", "Route passed"); });
+              {
+        setCorsHeaders();
+        MOUVEMENT = ARRET;
+        server.send(200, "text/plain", "Route passed"); });
 
     server.on("/getMode", []()
-              { server.send(200, "application/json", MODE == MODE_MANUEL ? "true" : "false"); });
+              {
+        setCorsHeaders();
+        server.send(200, "application/json", MODE == MODE_MANUEL ? "manuel" : "asservissement"); });
 
     server.begin();
     Serial.println("Serveur HTTP démarré");
@@ -156,6 +195,7 @@ void loop()
 
 void handleRoot()
 {
+    setCorsHeaders();
     String html = "<html><head>";
     html += "<script>";
     html += "function updateValues() {";

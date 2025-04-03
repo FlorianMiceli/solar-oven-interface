@@ -31,10 +31,10 @@ let pollInterval: ReturnType<typeof setInterval> | null = null;
 
 const checkModeStatus = async () => {
     try {
-        const response = await sendCommand('/getMode');
+        const response = await sendCommand('/getMode') 
+        console.log(response?.data)
         if (response) {
-            const isManualMode = await response.json();
-            toggleMode.value = isManualMode;
+            toggleMode.value = response.data === 'manuel';
         }
     } catch (error) {
         console.error('Failed to fetch mode status:', error);
@@ -232,5 +232,20 @@ const turnOnAsservissementMode = () => {
 
 :deep(.number-field-content) {
     min-width: 200px;
+}
+
+@media (max-width: 768px) {
+    .control-panels {
+        flex-direction: column;
+    }
+
+    .navigation-panel,
+    .temperature-panel {
+        width: 100%;
+    }
+
+    .controls-grid {
+        min-height: 100px;
+    }
 }
 </style>
