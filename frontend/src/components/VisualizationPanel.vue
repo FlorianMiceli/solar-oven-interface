@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+import { useEspStore } from "@/stores/esp";
+import { computed } from 'vue';
+
+const espStore = useEspStore();
 
 const props = defineProps<{
   modelOrientation: number
@@ -137,12 +141,17 @@ watch(modelOrientation, (newValue) => {
 <template>
   <TemplatePanel title="3D VISUALIZATION" class="large-panel">
     <div class="content-placeholder h-[200px] md:h-[300px]">
-      <div v-if="hasWebGL" class="viewport-container">
-        <canvas ref="canvas" width="300" height="300"></canvas>
+      <div v-show="espStore.isConnected">
+        <div v-if="hasWebGL" class="viewport-container">
+          <canvas ref="canvas" width="300" height="300"></canvas>
+        </div>
+        <div v-else class="error-message">
+          {{ webGLError }}
+          <p>Please try using a modern browser with WebGL support.</p>
+        </div>
       </div>
-      <div v-else class="error-message">
-        {{ webGLError }}
-        <p>Please try using a modern browser with WebGL support.</p>
+      <div v-show="!espStore.isConnected" class="text-destructive font-medium">
+        ESP DISCONNECTED
       </div>
     </div>
   </TemplatePanel>
@@ -172,5 +181,9 @@ watch(modelOrientation, (newValue) => {
   text-align: center;
   color: #ff4444;
   padding: 20px;
+}
+
+.text-destructive {
+  text-align: center;
 }
 </style>

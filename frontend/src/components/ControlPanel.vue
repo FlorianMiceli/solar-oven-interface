@@ -4,6 +4,10 @@ import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown } from "lucide-vue-ne
 import { Button } from "@/shadcn-components/ui/button";
 import { computed, watch, ref, onMounted, onUnmounted } from "vue";
 import { sendCommand } from "@/helpers/esp32Helpers";
+import { Switch } from "@/components/ui/switch";
+import { useEspStore } from "@/stores/esp";
+
+const espStore = useEspStore();
 
 const emit = defineEmits<{
     'update:targetTemperature': [value: number]
@@ -31,13 +35,18 @@ let pollInterval: ReturnType<typeof setInterval> | null = null;
 
 const checkModeStatus = async () => {
     try {
-        const response = await sendCommand('/getMode') 
+        const response = await sendCommand('/getMode')
         console.log(response?.data)
         if (response) {
             toggleMode.value = response.data === 'manuel';
+            espStore.setConnectionStatus(true);
+        }
+        if (response?.data === undefined) {
+            espStore.setConnectionStatus(false);
         }
     } catch (error) {
         console.error('Failed to fetch mode status:', error);
+        espStore.setConnectionStatus(false);
     }
 };
 
@@ -130,7 +139,7 @@ const turnOnAsservissementMode = () => {
         <BasePanel title="MANUAL MODE" class="navigation-panel">
             <div class="controls">
                 <div class="control-grid">
-                    <Switch id="airplane-mode" v-model="toggleMode" />
+                    <Switch id="airplane-mode" v-model="toggleMode" :disabled="!espStore.isConnected" />
                 </div>
             </div>
         </BasePanel>
@@ -195,6 +204,16 @@ const turnOnAsservissementMode = () => {
 .controls {
     height: 100%;
     padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.control-grid {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
 }
 
 .controls-grid {
