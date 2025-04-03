@@ -140,6 +140,18 @@ void setup()
         setCorsHeaders();
         server.send(200, "application/json", MODE == MODE_MANUEL ? "manuel" : "asservissement"); });
 
+    // Handle OPTIONS method for CORS pre-flight requests
+    server.on("/", HTTP_OPTIONS, []()
+              {
+        setCorsHeaders();
+        server.send(200); });
+    server.onNotFound([]()
+                      {
+        if (server.method() == HTTP_OPTIONS) {
+            setCorsHeaders();
+            server.send(200);
+        } });
+
     server.begin();
     Serial.println("Serveur HTTP démarré");
 }
@@ -328,24 +340,20 @@ void tournerRot(bool direction)
     digitalWrite(EN_PIN_ROT, LOW); // Active le driver
     digitalWrite(DIR_PIN_ROT, direction);
 
-   
-        digitalWrite(PUL_PIN_ROT, HIGH);
-        delayMicroseconds(500);
-        digitalWrite(PUL_PIN_ROT, LOW);
-        delayMicroseconds(500);
-    
+    digitalWrite(PUL_PIN_ROT, HIGH);
+    delayMicroseconds(500);
+    digitalWrite(PUL_PIN_ROT, LOW);
+    delayMicroseconds(500);
 }
 void tournerTrans(bool direction)
 {
     digitalWrite(EN_PIN_TRANS, LOW); // Active le driver
     digitalWrite(DIR_PIN_TRANS, direction);
 
-    
-        digitalWrite(PUL_PIN_TRANS, HIGH);
-        delayMicroseconds(500);
-        digitalWrite(PUL_PIN_TRANS, LOW);
-        delayMicroseconds(500);
-    
+    digitalWrite(PUL_PIN_TRANS, HIGH);
+    delayMicroseconds(500);
+    digitalWrite(PUL_PIN_TRANS, LOW);
+    delayMicroseconds(500);
 }
 float lireTemperature()
 {

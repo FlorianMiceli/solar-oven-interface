@@ -3,7 +3,12 @@ const ESP_URL = 'http://192.168.4.1'; // ESP32's default AP IP address
 export const sendCommand = async (command: string) => {
     try {
         const response = await fetch(`${ESP_URL}${command}`, {
-            method: 'GET'
+            method: 'GET',
+            mode: 'cors',
+            credentials: 'omit',
+            headers: {
+                'Accept': 'application/json, text/plain, */*'
+            }
         });
         
         if (!response.ok) {
