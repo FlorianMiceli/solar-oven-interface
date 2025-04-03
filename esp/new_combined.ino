@@ -328,28 +328,24 @@ void tournerRot(bool direction)
     digitalWrite(EN_PIN_ROT, LOW); // Active le driver
     digitalWrite(DIR_PIN_ROT, direction);
 
-    // Génère 200 pas
-    for (int i = 0; i < 500; i++)
-    {
+   
         digitalWrite(PUL_PIN_ROT, HIGH);
         delayMicroseconds(500);
         digitalWrite(PUL_PIN_ROT, LOW);
         delayMicroseconds(500);
-    }
+    
 }
 void tournerTrans(bool direction)
 {
     digitalWrite(EN_PIN_TRANS, LOW); // Active le driver
     digitalWrite(DIR_PIN_TRANS, direction);
 
-    // Génère 200 pas
-    for (int i = 0; i < 500; i++)
-    {
+    
         digitalWrite(PUL_PIN_TRANS, HIGH);
         delayMicroseconds(500);
         digitalWrite(PUL_PIN_TRANS, LOW);
         delayMicroseconds(500);
-    }
+    
 }
 float lireTemperature()
 {
