@@ -148,25 +148,25 @@ const turnOnAsservissementMode = () => {
                 <div class="controls-grid">
                     <div class="left-control">
                         <Button variant="outline" class="full-height-button" @mousedown="onLeftPress"
-                            @mouseup="onLeftRelease" @mouseleave="onLeftRelease">
+                            @mouseup="onLeftRelease" @mouseleave="onLeftRelease" :disabled="!toggleMode">
                             <ChevronLeft class="w-4 h-4" />
                         </Button>
                     </div>
 
                     <div class="center-controls">
                         <Button variant="outline" class="full-width-button" @mousedown="onUpPress"
-                            @mouseup="onUpRelease" @mouseleave="onUpRelease">
+                            @mouseup="onUpRelease" @mouseleave="onUpRelease" :disabled="!toggleMode">
                             <ChevronUp class="w-4 h-4" />
                         </Button>
                         <Button variant="outline" class="full-width-button" @mousedown="onDownPress"
-                            @mouseup="onDownRelease" @mouseleave="onDownRelease">
+                            @mouseup="onDownRelease" @mouseleave="onDownRelease" :disabled="!toggleMode">
                             <ChevronDown class="w-4 h-4" />
                         </Button>
                     </div>
 
                     <div class="right-control">
                         <Button variant="outline" class="full-height-button" @mousedown="onRightPress"
-                            @mouseup="onRightRelease" @mouseleave="onRightRelease">
+                            @mouseup="onRightRelease" @mouseleave="onRightRelease" :disabled="!toggleMode">
                             <ChevronRight class="w-4 h-4" />
                         </Button>
                     </div>
