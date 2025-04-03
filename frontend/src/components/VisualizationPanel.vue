@@ -2,7 +2,7 @@
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { useEspStore } from "@/stores/esp";
-import { computed } from 'vue';
+import { computed,ref, onMounted, watch } from 'vue';
 
 const espStore = useEspStore();
 
@@ -128,7 +128,7 @@ onMounted(() => {
   }
 });
 
-watch(modelOrientation, (newValue) => {
+watch(modelOrientation, (newValue: any) => {
   if (model) {
     // Rotation du modèle autour de l'axe Z
     model.rotation.x = 0;
