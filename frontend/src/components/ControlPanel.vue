@@ -88,7 +88,7 @@ watch(is_manual_mode, (newValue) => {
 
 const updateTemperature = async (value: number) => {
     targetTemperature.value = value;
-    await sendCommand(`/setTargetTemperature/${value}`);
+    await sendCommand(`/setTargetTemperature?value=${value}`);
 };
 
 const onLeftPress = () => {
