@@ -2,28 +2,15 @@
 import BasePanel from "./TemplatePanel.vue";
 import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown } from "lucide-vue-next";
 import { Button } from "@/shadcn-components/ui/button";
-import { computed, watch, ref, onMounted, onUnmounted } from "vue";
+import { watch, ref, onMounted, onUnmounted } from "vue";
 import { sendCommand } from "@/helpers/esp32Helpers";
 import { Switch } from "@/components/ui/switch";
 import { useEspStore } from "@/stores/esp";
 
 const espStore = useEspStore();
 
-const emit = defineEmits<{
-    'update:targetTemperature': [value: number]
-    'update:modelOrientation': [value: number]
-}>();
-
-const props = defineProps<{
-    modelValue: number
-    modelOrientation: number
-}>();
-
-const targetTemperature = computed(() => props.modelValue);
-const currentOrientation = computed({
-    get: () => props.modelOrientation,
-    set: (value) => emit('update:modelOrientation', value)
-});
+const targetTemperature = ref(45); // Default value matching ESP32's TARGET_TEMPERATURE
+const currentOrientation = ref(0);
 
 const ROTATION_SPEED = 0.001;
 let rotationInterval: ReturnType<typeof setInterval> | null = null;
@@ -32,6 +19,9 @@ const toggleMode = ref(true)
 
 // Add polling mechanism for mode status
 let pollInterval: ReturnType<typeof setInterval> | null = null;
+
+// Add polling mechanism for target temperature
+let temperaturePollInterval: ReturnType<typeof setInterval> | null = null;
 
 const checkModeStatus = async () => {
     try {
@@ -50,17 +40,38 @@ const checkModeStatus = async () => {
     }
 };
 
+const checkTargetTemperature = async () => {
+    try {
+        const response = await sendCommand('/getTargetTemperature');
+        if (response?.success && response.data) {
+            targetTemperature.value = parseInt(response.data);
+            espStore.setConnectionStatus(true);
+        }
+        if (response?.data === undefined) {
+            espStore.setConnectionStatus(false);
+        }
+    } catch (error) {
+        console.error('Failed to fetch target temperature:', error);
+        espStore.setConnectionStatus(false);
+    }
+};
+
 onMounted(() => {
-    // Initial check
+    // Initial checks
     checkModeStatus();
+    checkTargetTemperature();
     // Set up polling every second
     pollInterval = setInterval(checkModeStatus, 1000);
+    temperaturePollInterval = setInterval(checkTargetTemperature, 1000);
 });
 
 onUnmounted(() => {
     // Clean up intervals when component is destroyed
     if (pollInterval !== null) {
         clearInterval(pollInterval);
+    }
+    if (temperaturePollInterval !== null) {
+        clearInterval(temperaturePollInterval);
     }
     if (rotationInterval !== null) {
         clearInterval(rotationInterval);
@@ -75,8 +86,9 @@ watch(toggleMode, (newValue) => {
     }
 });
 
-const updateTemperature = (value: number) => {
-    emit('update:targetTemperature', value);
+const updateTemperature = async (value: number) => {
+    targetTemperature.value = value;
+    await sendCommand(`/setTargetTemperature/${value}`);
 };
 
 const onLeftPress = () => {
@@ -176,7 +188,7 @@ const turnOnAsservissementMode = () => {
 
         <BasePanel title="TARGET TEMPERATURE" class="temperature-panel">
             <div class="temperature-input">
-                <NumberField id="temperature" :model-value="targetTemperature" @update:model-value="updateTemperature"
+                <NumberField id="temperature" v-model="targetTemperature" @update:model-value="updateTemperature"
                     :min="0">
                     <NumberFieldContent>
                         <NumberFieldDecrement />
