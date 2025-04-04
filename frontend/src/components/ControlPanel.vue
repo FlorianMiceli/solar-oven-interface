@@ -15,7 +15,7 @@ const currentOrientation = ref(0);
 const ROTATION_SPEED = 0.001;
 let rotationInterval: ReturnType<typeof setInterval> | null = null;
 
-const toggleMode = ref(true)
+const is_manual_mode = ref(true)
 
 // Add polling mechanism for mode status
 let pollInterval: ReturnType<typeof setInterval> | null = null;
@@ -28,7 +28,7 @@ const checkModeStatus = async () => {
         const response = await sendCommand('/getMode')
         console.log(response?.data)
         if (response) {
-            toggleMode.value = response.data === 'manuel';
+            is_manual_mode.value = response.data === 'manuel';
             espStore.setConnectionStatus(true);
         }
         if (response?.data === undefined) {
@@ -78,7 +78,7 @@ onUnmounted(() => {
     }
 });
 
-watch(toggleMode, (newValue) => {
+watch(is_manual_mode, (newValue) => {
     if (newValue) {
         turnOnManualMode();
     } else {
@@ -151,7 +151,7 @@ const turnOnAsservissementMode = () => {
         <BasePanel title="MANUAL MODE" class="navigation-panel">
             <div class="controls">
                 <div class="control-grid">
-                    <Switch id="airplane-mode" v-model="toggleMode" :disabled="!espStore.isConnected" />
+                    <Switch id="airplane-mode" v-model="is_manual_mode" :disabled="!espStore.isConnected" />
                 </div>
             </div>
         </BasePanel>
@@ -160,25 +160,25 @@ const turnOnAsservissementMode = () => {
                 <div class="controls-grid">
                     <div class="left-control">
                         <Button variant="outline" class="full-height-button" @mousedown="onLeftPress"
-                            @mouseup="onLeftRelease" @mouseleave="onLeftRelease" :disabled="!toggleMode">
+                            @mouseup="onLeftRelease" @mouseleave="onLeftRelease" :disabled="!is_manual_mode">
                             <ChevronLeft class="w-4 h-4" />
                         </Button>
                     </div>
 
                     <div class="center-controls">
                         <Button variant="outline" class="full-width-button" @mousedown="onUpPress"
-                            @mouseup="onUpRelease" @mouseleave="onUpRelease" :disabled="!toggleMode">
+                            @mouseup="onUpRelease" @mouseleave="onUpRelease" :disabled="!is_manual_mode">
                             <ChevronUp class="w-4 h-4" />
                         </Button>
                         <Button variant="outline" class="full-width-button" @mousedown="onDownPress"
-                            @mouseup="onDownRelease" @mouseleave="onDownRelease" :disabled="!toggleMode">
+                            @mouseup="onDownRelease" @mouseleave="onDownRelease" :disabled="!is_manual_mode">
                             <ChevronDown class="w-4 h-4" />
                         </Button>
                     </div>
 
                     <div class="right-control">
                         <Button variant="outline" class="full-height-button" @mousedown="onRightPress"
-                            @mouseup="onRightRelease" @mouseleave="onRightRelease" :disabled="!toggleMode">
+                            @mouseup="onRightRelease" @mouseleave="onRightRelease" :disabled="!is_manual_mode">
                             <ChevronRight class="w-4 h-4" />
                         </Button>
                     </div>
@@ -189,7 +189,7 @@ const turnOnAsservissementMode = () => {
         <BasePanel title="TARGET TEMPERATURE" class="temperature-panel">
             <div class="temperature-input">
                 <NumberField id="temperature" v-model="targetTemperature" @update:model-value="updateTemperature"
-                    :min="0">
+                    :min="0" :disabled="!is_manual_mode">
                     <NumberFieldContent>
                         <NumberFieldDecrement />
                         <NumberFieldInput />
