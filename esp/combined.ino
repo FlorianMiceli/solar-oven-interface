@@ -146,8 +146,31 @@ void setup()
         setCorsHeaders();
         server.send(200, "application/json", String(TARGET_TEMPERATURE)); });
 
+    server.on("/getTemperature", []()
+              {
+        setCorsHeaders();
+        server.send(200, "application/json", fakeTemperature()); });
+    // server.send(200, "application/json", ); String(lireTemperature()); });
+
+    server.on("/setTargetTemperature", []()
+              {
+        setCorsHeaders();
+        if (server.hasArg("value")) {
+            TARGET_TEMPERATURE = server.arg("value").toInt();
+            server.send(200, "application/json", String(TARGET_TEMPERATURE));
+        } else {
+            server.send(400, "text/plain", "Missing value parameter");
+        } });
+
     server.begin();
     Serial.println("Serveur HTTP démarré");
+}
+
+String fakeTemperature()
+{
+    float time = millis() / 1000.0;
+    float random_offset = random(-250, 250) / 1000.0;
+    return String(time + random_offset);
 }
 
 void loop()
