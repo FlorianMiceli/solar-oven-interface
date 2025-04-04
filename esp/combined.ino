@@ -56,7 +56,7 @@ WebServer server(80);
 void setCorsHeaders()
 {
     server.sendHeader("Access-Control-Allow-Origin", "*");
-    server.sendHeader("Access-Control-Allow-Methods", "GET");
+    server.sendHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
     server.sendHeader("Access-Control-Allow-Headers", "*");
 }
 
@@ -161,6 +161,12 @@ void setup()
         } else {
             server.send(400, "text/plain", "Missing value parameter");
         } });
+
+    // Add OPTIONS request handler for CORS preflight
+    server.on("/setTargetTemperature", HTTP_OPTIONS, []()
+              {
+        setCorsHeaders();
+        server.send(200); });
 
     server.begin();
     Serial.println("Serveur HTTP démarré");
