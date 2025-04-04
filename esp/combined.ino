@@ -141,10 +141,10 @@ void setup()
         setCorsHeaders();
         server.send(200, "application/json", MODE == MODE_MANUEL ? "manuel" : "asservissement"); });
 
-    server.on("/getMode", []()
+    server.on("/getTargetTemperature", []()
               {
         setCorsHeaders();
-        server.send(200, "application/json", TARGET_TEMPERATURE); });
+        server.send(200, "application/json", String(TARGET_TEMPERATURE)); });
 
     server.begin();
     Serial.println("Serveur HTTP démarré");
