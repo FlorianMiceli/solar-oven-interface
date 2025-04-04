@@ -22,7 +22,7 @@
 #define NUM_LEDS 1
 
 int ROT_OK = 0; // variable qu'on changera pour passer de la recherche du soleil sur la rotation à la recherche du soleil sur la translation
-int TRANS_OK = 0; 
+int TRANS_OK = 0;
 bool moteurBloque = false;
 bool moteurActif = false; // Indique si le moteur a déjà tourné (pour le contrôle de la température)
 
@@ -46,6 +46,7 @@ enum Mouvement
 
 Mode MODE = MODE_MANUEL;
 Mouvement MOUVEMENT = ARRET;
+int TARGET_TEMPERATURE = 45;
 
 // webserver
 const char *ssid = "ESP32-S3_AP";
@@ -140,6 +141,11 @@ void setup()
         setCorsHeaders();
         server.send(200, "application/json", MODE == MODE_MANUEL ? "manuel" : "asservissement"); });
 
+    server.on("/getMode", []()
+              {
+        setCorsHeaders();
+        server.send(200, "application/json", TARGET_TEMPERATURE); });
+
     server.begin();
     Serial.println("Serveur HTTP démarré");
 }
@@ -148,8 +154,8 @@ void loop()
 {
     if (MODE == MODE_MANUEL)
     {
-          ROT_OK = 0; // variable qu'on changera pour passer de la recherche du soleil sur la rotation à la recherche du soleil sur la translation
-          TRANS_OK = 0;
+        ROT_OK = 0; // variable qu'on changera pour passer de la recherche du soleil sur la rotation à la recherche du soleil sur la translation
+        TRANS_OK = 0;
         if (MOUVEMENT == ROT_DROITE)
         { // on part à droite
             tournerRot(DROITE);
@@ -185,7 +191,7 @@ void loop()
             {
                 faireTrans();
             }
-            if (TRANS_OK==1)
+            if (TRANS_OK == 1)
             { // On asservi par rapport à la températurz
                 controleTemperature(25);
             }
@@ -231,24 +237,24 @@ String lirePhotodiodes()
     float tensionBas = valeurBas * (3.3 / 4095.0);
     return String(tensionHaut) + "," + String(tensionBas);
 }
-void stopMoteurTrans(){
-        digitalWrite(EN_PIN_TRANS, LOW); // Active le driver
-        digitalWrite(DIR_PIN_TRANS, LOW);
+void stopMoteurTrans()
+{
+    digitalWrite(EN_PIN_TRANS, LOW); // Active le driver
+    digitalWrite(DIR_PIN_TRANS, LOW);
 
-   
-        digitalWrite(PUL_PIN_TRANS, HIGH);
-        }
+    digitalWrite(PUL_PIN_TRANS, HIGH);
+}
 void faireRot()
 {
     int valeurDroite = analogRead(PHOTODIODE_DROITE);
     int valeurGauche = analogRead(PHOTODIODE_GAUCHE);
 
-    if (abs(valeurDroite - valeurGauche) < 250 )
+    if (abs(valeurDroite - valeurGauche) < 250)
     {
         Serial.println("Soleil trouvé en rotation !");
-        if (valeurDroite > 500 && valeurGauche>500){
-          ROT_OK=1;
-          
+        if (valeurDroite > 500 && valeurGauche > 500)
+        {
+            ROT_OK = 1;
         }
         return;
     }
@@ -270,7 +276,7 @@ void faireTrans()
     // ici il y a une faille dans le programme étant donnée que les boutons sont "borné" cela veut dire que dans si on va dans le sens arriere sur la
     // translation et qu'on appuye sur le bouton de fin on continue
     // d'aller en arrière, mais on est pas censé arriver sur cette interrupteur en arriere voila c pour ça.
-    
+
     if (etatBoutonFin == LOW)
     {
         stopEtRetourArriere(ARRIERE);
@@ -295,15 +301,13 @@ void chercherSoleilTrans()
 
     if (abs(valeurHaute - valeurBasse) < 100)
     { // On fait rien
-        if(valeurHaute >500 && valeurBasse<500){
-          
-          TRANS_OK = 1;
+        if (valeurHaute > 500 && valeurBasse < 500)
+        {
+
+            TRANS_OK = 1;
         }
         stopMoteurTrans();
         Serial.println("Soleil trouvé en rotation !");
-        
-        
-        
     }
     else if (valeurHaute > valeurBasse)
     { // on monte la parabole
@@ -347,24 +351,20 @@ void tournerRot(bool direction)
     digitalWrite(EN_PIN_ROT, LOW); // Active le driver
     digitalWrite(DIR_PIN_ROT, direction);
 
-   
-        digitalWrite(PUL_PIN_ROT, HIGH);
-        delayMicroseconds(500);
-        digitalWrite(PUL_PIN_ROT, LOW);
-        delayMicroseconds(500);
-    
+    digitalWrite(PUL_PIN_ROT, HIGH);
+    delayMicroseconds(500);
+    digitalWrite(PUL_PIN_ROT, LOW);
+    delayMicroseconds(500);
 }
 void tournerTrans(bool direction)
 {
-        digitalWrite(EN_PIN_TRANS, LOW); // Active le driver
-        digitalWrite(DIR_PIN_TRANS, direction);
+    digitalWrite(EN_PIN_TRANS, LOW); // Active le driver
+    digitalWrite(DIR_PIN_TRANS, direction);
 
-    
-        digitalWrite(PUL_PIN_TRANS, HIGH);
-        delayMicroseconds(500);
-        digitalWrite(PUL_PIN_TRANS, LOW);
-        delayMicroseconds(500);
-    
+    digitalWrite(PUL_PIN_TRANS, HIGH);
+    delayMicroseconds(500);
+    digitalWrite(PUL_PIN_TRANS, LOW);
+    delayMicroseconds(500);
 }
 float lireTemperature()
 {
