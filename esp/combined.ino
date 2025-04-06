@@ -54,6 +54,7 @@ enum EtatAsservissement
 Mode MODE = MODE_MANUEL;
 Mouvement MOUVEMENT = ARRET;
 EtatAsservissement etatAsserv = ROTATION;
+float TARGET_TEMPERATURE = 45;
 
 const char *ssid = "ESP32-S3_AP";
 const char *password = "motdepasse123";
