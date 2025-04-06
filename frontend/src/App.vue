@@ -1,18 +1,12 @@
-<script setup lang="ts">
-import { VueQueryDevtools } from '@tanstack/vue-query-devtools'
-</script>
-
 <template>
     <header class="header">
         <div class="app-name">SOLAR OVEN PROJECT</div>
     </header>
     <router-view />
-    <VueQueryDevtools />
     <Toaster />
 </template>
 
 <style scoped>
-
 .header {
     height: 4vh;
     background-color: white;
