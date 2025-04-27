@@ -116,6 +116,8 @@ const checkTargetTemperature = async () => {
     }
 };
 
+const secondsHistory = 15; // Number of seconds to keep in history
+
 const checkCurrentTemperature = async () => {
     try {
         const response = await sendCommand('/getTemperature');
@@ -127,8 +129,8 @@ const checkCurrentTemperature = async () => {
                 'Current Temperature': currentTemperature.value,
                 'Target Temperature': targetTemperature.value
             });
-            // Keep only last 15 data points
-            if (temperatureData.value.length > 15) {
+            // Keep only last x data points
+            if (temperatureData.value.length > secondsHistory) {
                 temperatureData.value.shift();
             }
             espStore.setConnectionStatus(true);
