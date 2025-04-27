@@ -76,7 +76,7 @@ const initScene = () => {
 
         model.rotation.x = 0;
         model.rotation.y = 0;
-        model.rotation.z = Math.PI / 2;
+        model.rotation.z = 10 * Math.PI / 3;
 
         // Appliquer le clipping plane à tous les matériaux du modèle
         model.traverse((node: THREE.Object3D) => {
