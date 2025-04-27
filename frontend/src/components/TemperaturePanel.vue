@@ -157,7 +157,7 @@ onUnmounted(() => {
         clearInterval(temperaturePollInterval);
     }
     if (targetTempPollInterval !== null) {
-        clearInterval(targetTempPollInterval);
+        clearInterval(targetTempPollInterval); 
     }
 });
 
@@ -171,7 +171,7 @@ onUnmounted(() => {
                 {{ currentTemperature?.toFixed(1) || '--' }}°C
             </div>
         </div>
-        <div class="h-[300px] m-2 p-4 bg-white rounded-lg shadow-sm">
+        <div class="h-[400px] m-2 p-4 bg-white rounded-lg shadow-sm">
             <Line :data="chartData" :options="options" />
         </div>
     </BasePanel>

@@ -14,10 +14,6 @@ const targetTemperature = ref(0);
 
     <div class="side-panels">
       <TemperaturePanel :target-temperature="targetTemperature"/>
-      <div class="panel-row">
-        <NitsPanel />
-        <BatteryPanel />
-      </div>
     </div>
   </div>
 </template>
