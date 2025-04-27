@@ -28,6 +28,7 @@ enum EtatAsservissement { ROTATION, TRANSLATION, TEMPERATURE };
 
 int ROT_OK = 0;
 int TRANS_OK = 0;
+int TARGET_TEMPERATURE = 45;
 bool moteurBloque = false;
 bool moteurActif = false;
 const int margeHaute = 2;
