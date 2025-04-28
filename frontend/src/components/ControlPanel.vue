@@ -9,8 +9,21 @@ import { useEspStore } from "@/stores/esp";
 
 const espStore = useEspStore();
 
+const props = defineProps<{
+  modelOrientation: number
+}>();
+
+const emit = defineEmits<{
+  'update:modelOrientation': [value: number]
+}>();
+
+const modelOrientation = computed({
+  get: () => props.modelOrientation,
+  set: (value) => emit('update:modelOrientation', value)
+});
+
+
 const targetTemperature = ref(45); // Default value matching ESP32's TARGET_TEMPERATURE
-const currentOrientation = ref(0);
 
 const ROTATION_SPEED = 0.001;
 let rotationInterval: ReturnType<typeof setInterval> | null = null;
@@ -94,7 +107,7 @@ const updateTemperature = async (value: number) => {
 const onLeftPress = () => {
     sendCommand('/rotation_gauche');
     rotationInterval = setInterval(() => {
-        currentOrientation.value = (currentOrientation.value + ROTATION_SPEED) % 1;
+        modelOrientation.value = (modelOrientation.value + ROTATION_SPEED) % 1;
     }, 16);
 };
 
@@ -109,7 +122,7 @@ const onLeftRelease = () => {
 const onRightPress = () => {
     sendCommand('/rotation_droite');
     rotationInterval = setInterval(() => {
-        currentOrientation.value = (currentOrientation.value - ROTATION_SPEED) % 1;
+        modelOrientation.value = (modelOrientation.value - ROTATION_SPEED) % 1;
     }, 16);
 };
 

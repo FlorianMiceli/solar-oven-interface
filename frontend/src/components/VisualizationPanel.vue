@@ -133,7 +133,7 @@ watch(modelOrientation, (newValue: any) => {
     // Rotation du modèle autour de l'axe Z
     model.rotation.x = 0;
     model.rotation.y = 0;
-    model.rotation.z = Math.PI / 2 + (newValue * Math.PI * 2); // Rotation autour de l'axe Z en partant de PI/2
+    model.rotation.z = 10*Math.PI / 3 + (newValue * Math.PI * 2); // Rotation autour de l'axe Z en partant de PI/2
   }
 });
 </script>
