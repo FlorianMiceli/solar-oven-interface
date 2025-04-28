@@ -124,9 +124,9 @@ void setup() {
         server.send(200, "application/json", MODE == MODE_MANUEL ? "manuel" : "asservissement");
     });
 
-    server.on("/getTargetTemperature", HTTP_GET, []() {
+    server.on("/getTargetTemperature", []() {
         setCorsHeaders();
-        server.send(200, "application/json", String(TARGET_TEMPERATURE));
+        server.send(200, "text/plain", String(TARGET_TEMPERATURE));
     });
 
     server.on("/getTemperature", []()
@@ -307,7 +307,7 @@ float lireTemperature() {
     float valeurEnAmpere = valeurEnVolt / 5500.0;
     float valeurEnMicroAmpere = valeurEnAmpere * 1000000;
     float temperatureCelsius = valeurEnMicroAmpere - 273;
-    float temperatureOffset = temperatureCelsius;
+    float temperatureOffset = temperatureCelsius + 10;
     delay(2000);
     return temperatureOffset;
 }
@@ -318,7 +318,7 @@ String lireTemperaturePourInterface() {
     float valeurEnAmpere = valeurEnVolt / 5500.0;
     float valeurEnMicroAmpere = valeurEnAmpere * 1000000;
     float temperatureCelsius = valeurEnMicroAmpere - 273;
-    float temperatureOffset = temperatureCelsius;
+    float temperatureOffset = temperatureCelsius + 10;
     return String(temperatureOffset);
 }
 
