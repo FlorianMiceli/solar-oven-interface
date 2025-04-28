@@ -124,16 +124,16 @@ void setup() {
         server.send(200, "application/json", MODE == MODE_MANUEL ? "manuel" : "asservissement");
     });
 
-        server.on("/getTargetTemperature", []()
-              {
+    server.on("/getTargetTemperature", HTTP_GET, []() {
         setCorsHeaders();
-        server.send(200, "application/json", String(TARGET_TEMPERATURE)); });
+        server.send(200, "application/json", String(TARGET_TEMPERATURE));
+    });
 
     server.on("/getTemperature", []()
               {
         setCorsHeaders();
-        server.send(200, "application/json", fakeTemperature()); });
-    // server.send(200, "application/json", ); String(lireTemperature()); });
+        // server.send(200, "application/json", fakeTemperature()); });
+        server.send(200, "application/json", String(lireTemperaturePourInterface())); });
 
     server.on("/setTargetTemperature", []()
               {
